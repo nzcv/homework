@@ -75,18 +75,20 @@ CREATE DATABASE IF NOT EXISTS competitor_analysis;
 
 ```sql
 CREATE TABLE IF NOT EXISTS competitor_analysis.competitor_analysis_data (
-  competitor_id INT,
-  market_share DECIMAL(10,6),
-  product_category STRING,
-  customer_rating DECIMAL(4,2),
-  sales_volume INT,
-  product_range INT,
-  price_range DECIMAL(10,2),
-  location STRING,
-  ad_spend DECIMAL(10,2),
-  social_media_engagement DECIMAL(10,2)
+    competitor_id INT COMMENT '竞争对手ID',
+    market_share DECIMAL(10,6) COMMENT '市场份额(0-1)',
+    product_category STRING COMMENT '产品类别(Electronics/Clothing/Food)',
+    customer_rating DECIMAL(4,2) COMMENT '客户评分(1-5)',
+    sales_volume INT COMMENT '销售量',
+    product_range INT COMMENT '产品种类数量',
+    price_range DECIMAL(10,2) COMMENT '价格区间',
+    location STRING COMMENT '地理位置(Asia/EU/US)',
+    ad_spend DECIMAL(10,2) COMMENT '广告支出',
+    social_media_engagement DECIMAL(10,2) COMMENT '社交媒体互动量'
 );
 ```
+
+
 
 第4章  数据导入
 4.1 导入方法
