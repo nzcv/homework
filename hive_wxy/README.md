@@ -311,11 +311,11 @@ LIMIT 10;
 ### 1. 导出数据到 MySQL
 ```bash
 sqoop export \
---connect jdbc:mysql://localhost/test \
+--connect jdbc:mysql://localhost/competitor_analysis \
 --username root \
 --password root\
 --table sales_prediction \
---export-dir /user/hive/warehouse/test.db/sales_prediction \
+--export-dir /user/hive/warehouse/competitor_analysis.db/competitor_analysis_data \
 --input-fields-terminated-by ',' \
 --input-lines-terminated-by '\n'
 ```
