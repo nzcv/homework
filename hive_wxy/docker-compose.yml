@@ -1,0 +1,36 @@
+version: "2.4"
+
+services:
+  hive-metastore:
+    image: bde2020/hive-metastore-postgresql:latest
+    environment:
+      - "HIVE_METASTORE_CLIENT_CONNECT_RETRY_LIMIT=5"
+      - "HIVE_METASTORE_CLIENT_CONNECT_RETRY_DELAY=3"
+      - "POSTGRES_PASSWORD=hivepassword"
+      - "POSTGRES_USER=hiveuser"
+      - "POSTGRES_DB=hivemetastore"
+    ports:
+      - "9083:9083"
+    networks:
+      - hadoop
+
+  hive-server:
+    image: bde2020/hive:latest
+    environment:
+      - "HADOOP_NAMENODE=namenode"
+      - "HADOOP_PORT_9000_TCP_ADDR=namenode"
+      - "HADOOP_PORT_9000_TCP_PORT=9000"
+      - "HIVE_METASTORE_HOST=hive-metastore"
+      - "HIVE_METASTORE_PORT=9083"
+      - "HIVE_SERVER2_THRIFT_PORT=10000"
+      - "HIVE_SERVER2_TRANSPORT_MODE=binary"
+    ports:
+      - "10000:10000"
+    depends_on:
+      - hive-metastore
+    networks:
+      - hadoop
+
+networks:
+  hadoop:
+    external: true
