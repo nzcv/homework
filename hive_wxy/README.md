@@ -75,19 +75,21 @@ CREATE DATABASE IF NOT EXISTS competitor_analysis;
 
 ```sql
 CREATE TABLE IF NOT EXISTS competitor_analysis.competitor_analysis_data (
-    competitor_id INT COMMENT '竞争对手ID',
-    market_share DECIMAL(10,6) COMMENT '市场份额(0-1)',
-    product_category STRING COMMENT '产品类别(Electronics/Clothing/Food)',
-    customer_rating DECIMAL(4,2) COMMENT '客户评分(1-5)',
-    sales_volume INT COMMENT '销售量',
-    product_range INT COMMENT '产品种类数量',
-    price_range DECIMAL(10,2) COMMENT '价格区间',
-    location STRING COMMENT '地理位置(Asia/EU/US)',
-    ad_spend DECIMAL(10,2) COMMENT '广告支出',
-    social_media_engagement DECIMAL(10,2) COMMENT '社交媒体互动量'
-);
+    competitor_id INT,
+    market_share DECIMAL(10,6),
+    product_category STRING,
+    customer_rating DECIMAL(4,2),
+    sales_volume INT,
+    product_range INT,
+    price_range DECIMAL(10,2),
+    location STRING,
+    ad_spend DECIMAL(10,2),
+    social_media_engagement DECIMAL(10,2)
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
 ```
-
 
 
 第4章  数据导入
@@ -99,6 +101,7 @@ docker compose cp competitor_analysis_data_cleaned.csv hive-server:/
 ```
 
 ```sql
+use competitor_analysis;
 LOAD DATA LOCAL INPATH '/competitor_analysis_data_cleaned.csv' INTO TABLE competitor_analysis.competitor_analysis_data;
 ``` 
  
@@ -106,7 +109,8 @@ LOAD DATA LOCAL INPATH '/competitor_analysis_data_cleaned.csv' INTO TABLE compet
 
 ```sql
 SELECT * FROM competitor_analysis.competitor_analysis_data;
-SELECT * FROM competitor_analysis.competitor_analysis_data LIMIT 10;
+SELECT * FROM competitor_analysis_data LIMIT 10;
+DROP TABLE IF EXISTS competitor_analysis_data;
 ```
 
 
@@ -155,6 +159,42 @@ FROM competitor_analysis.competitor_analysis_data
 GROUP BY location, product_category
 ORDER BY location, avg_market_share DESC;
 ```
+
+查询结果:
++-----------+-------------------+-------------------+-------------------+-------------+
+| location  | product_category  | competitor_count  | avg_market_share  | avg_rating  |
++-----------+-------------------+-------------------+-------------------+-------------+
+| Asia      | Electronics       | 127               | 52.76             | 2.92        |
+| Asia      | Clothing          | 122               | 48.80             | 2.98        |
+| Asia      | Food              | 106               | 47.93             | 2.78        |
+| EU        | Electronics       | 99                | 53.25             | 2.86        |
+| EU        | Clothing          | 104               | 51.17             | 2.92        |
+| EU        | Food              | 104               | 49.04             | 2.87        |
+| US        | Electronics       | 103               | 47.93             | 3.03        |
+| US        | Clothing          | 124               | 47.85             | 2.82        |
+| US        | Food              | 111               | 47.07             | 2.99        |
++-----------+-------------------+-------------------+-------------------+-------------+
+
+电子产品 (Electronics):
+
+亚洲 (Asia) 的市场份额平均为 52.76%，竞争者数量最多为 127，客户评分较低为 2.92。
+欧洲 (EU) 的市场份额平均为 53.25%，竞争者数量为 99，客户评分为 2.86。
+美国 (US) 的市场份额平均为 47.93%，竞争者数量为 103，客户评分最高为 3.03。
+服装 (Clothing):
+
+亚洲 (Asia) 的市场份额平均为 48.80%，竞争者数量为 122，客户评分为 2.98。
+欧洲 (EU) 的市场份额平均为 51.17%，竞争者数量为 104，客户评分为 2.92。
+美国 (US) 的市场份额平均为 47.85%，竞争者数量最多为 124，客户评分较低为 2.82。
+食品 (Food):
+
+亚洲 (Asia) 的市场份额平均为 47.93%，竞争者数量为 106，客户评分为 2.78。
+欧洲 (EU) 的市场份额平均为 49.04%，竞争者数量为 104，客户评分为 2.87。
+美国 (US) 的市场份额平均为 47.07%，竞争者数量为 111，客户评分最高为 2.99。
+总结:
+电子产品在欧洲的市场份额最高，但客户评分在美国最高。
+服装在欧洲的市场份额最高，但客户评分在亚洲稍高。
+食品在欧洲的市场份额最高，但客户评分在美国最高。
+总体来说，竞争者数量在美国最多，尤其是在服装领域。
 
 4. 广告支出与社交媒体互动关系分析
 ```sql
@@ -267,6 +307,21 @@ LIMIT 10;
 
 第6章  结论导出
 6.1 Sqoop命令
+
+### 1. 导出数据到 MySQL
+```bash
+sqoop export \
+--connect jdbc:mysql://localhost/test \
+--username root \
+--password root\
+--table sales_prediction \
+--export-dir /user/hive/warehouse/test.db/sales_prediction \
+--input-fields-terminated-by ',' \
+--input-lines-terminated-by '\n'
+```
+
+**分析总结**: 该命令使用 Sqoop 将 Hive 中的 `sales_prediction` 表数据导出到 MySQL 数据库中的 `sales_prediction` 表。
+    
 
 6.2 导出截图
 6.3 MySQL中查询分析结果
