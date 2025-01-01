@@ -48,6 +48,16 @@ social_media_engagement	DECIMAL	10,2	NOT NULL	社交媒体互动量
 year	INT	4	NOT NULL	年份(分区字段)
 quarter	INT	1	NOT NULL	季度(分区字段)
 
+## Hive连接
+
+https://github.com/big-data-europe/docker-hive
+
+```
+  $ docker-compose exec hive-server bash
+  # /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000
+  > CREATE TABLE pokes (foo INT, bar STRING);
+  > LOAD DATA LOCAL INPATH '/opt/hive/examples/files/kv1.txt' OVERWRITE INTO TABLE pokes;
+```
 
 3.2 创建数据库
 使用以下命令创建数据库:
