@@ -92,14 +92,19 @@ CREATE TABLE IF NOT EXISTS competitor_analysis.competitor_analysis_data (
 4.1 导入方法
 使用hive导入数据
 
-```sql
-LOAD DATA INPATH '/user/hive/warehouse/competitor_analysis_data_cleaned.csv' INTO TABLE competitor_analysis.competitor_analysis_data;
-``` 
+```shell
+docker compose cp competitor_analysis_data_cleaned.csv hive-server:/
+```
 
+```sql
+LOAD DATA LOCAL INPATH '/competitor_analysis_data_cleaned.csv' INTO TABLE competitor_analysis.competitor_analysis_data;
+``` 
+ 
 4.2 数据确认
 
 ```sql
 SELECT * FROM competitor_analysis.competitor_analysis_data;
+SELECT * FROM competitor_analysis.competitor_analysis_data LIMIT 10;
 ```
 
 
